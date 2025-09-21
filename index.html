@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>flexzone</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align:center; padding:50px; background:#f0f2f5; }
+    button { padding:12px 24px; font-size:16px; cursor:pointer; margin-top:20px; border:none; border-radius:8px; background:#4CAF50; color:white; transition:0.2s; }
+    button:hover { background:#45a049; transform:scale(1.05); }
+    #status { margin-top:30px; font-size:16px; color:#333; }
+  </style>
+</head>
+<body>
+
+<h2>🚀 Google Login</h2>
+<button id="loginBtn">Login with Google</button>
+
+<div id="status"></div>
+
+<script>
+(async () => {
+  const statusDiv = document.getElementById("status");
+
+  // URL से token check करो
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromURL = urlParams.get('token');
+
+  if(tokenFromURL){
+    localStorage.setItem('appToken', tokenFromURL);
+    window.history.replaceState({}, document.title, "/"); // URL से token remove
+  }
+
+  const appToken = localStorage.getItem('appToken');
+
+  function renderLoggedIn(){
+    statusDiv.innerHTML = "<p>🎉 Logged in successfully!</p><button id='logoutBtn'>Logout</button>";
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      localStorage.removeItem('appToken');
+      location.reload();
+    });
+  }
+
+  function renderLoginBtn(){
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.addEventListener('click', ()=>{
+      const currentOrigin = window.location.origin;
+      // universal: backend URL hardcoded nahi; assume same origin backend
+      const backendURL = "https://flexzone-in.onrender.com"; // backend always on port 3000
+      window.location.href = `${backendURL}/auth?redirect=${encodeURIComponent(currentOrigin)}`;
+    });
+  }
+
+  if(appToken){
+    renderLoggedIn();
+  } else {
+    renderLoginBtn();
+  }
+
+})();
+</script>
+
+</body>
+  </html>
